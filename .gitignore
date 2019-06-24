@@ -1,0 +1,4 @@
+data/
+.Rhistory
+*.csv
+*.xlsx

@@ -1,0 +1,53 @@
+---
+title: "R for MSF rest report"
+author: "Didac Fortuny"
+date: "22/6/2019"
+output: pdf_document
+---
+
+```{r LIBRARIES, include=FALSE}
+library(dplyr)
+library(knitr)
+library(readxl)
+```
+
+
+```{r READ DATA, include=FALSE}
+DATA_FILE <- "data/PSS-Sample DataSet no password.xlsx"
+pss_data <- read_excel(DATA_FILE)
+```
+
+```{r SEPARATE DATA BY ROUND, include=FALSE}
+pss_data_round_1 <- pss_data %>% filter(Round == 1)
+pss_data_round_2 <- pss_data %>% filter(Round == 2)
+```
+
+# How happy are you with the staff (nurses and doctors) working in the facility?
+
+## Round 1
+
+```{r How happy are you with the staff (nurses and doctors) working in the facility?, echo=FALSE, results="asis"}
+data <- pss_data_round_1
+
+data$level_of_satisfaction <- NA
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_unhappy"] <- 0
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "unhappy"] <- 1
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "neutral"] <- 2
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "happy"] <- 3
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_happy"] <- 4
+
+summary_table <- data %>% group_by(level_of_satisfaction) %>% summarise(N = n())
+summary_table <- summary_table %>% arrange(desc(level_of_satisfaction))
+summary_table <- summary_table %>% mutate(Percentage = 100 * N / sum(N))
+summary_table$Cumulative_percentage <- cumsum(summary_table$Percentage)
+
+summary_table
+#kable(summary_table, caption = "How happy are you with the staff (nurses and doctors) working in the facility?")
+```
+
+```{r Number of happy or very happy, echo=FALSE}
+happy <- summary_table$N[summary_table$level_of_satisfaction >= 3]
+happy <- sum(happy)
+```
+
+The number of patients who were Very happy or Happy with the staff was `r happy`.
