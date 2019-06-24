@@ -11,7 +11,7 @@
 
 # VARIABLES ---------------------------------------------------------------
 
-number_one <- 1   # Assign value to varible with <- or =
+number_one <- 1   # Assign value to variable with <- or =
 number_two <- 2
 
 number_one   # Display the value of the variable
@@ -68,7 +68,7 @@ vector_fibokemon <- c("pikachu", 2, TRUE)
 vector_fibokemon
 
 
-# EXERCICES ---------------------------------------------------------------
+# EXERCISES ---------------------------------------------------------------
 
 # 1. Which is the type of each of the members of the vector_fibokemon vector?
 
@@ -214,7 +214,7 @@ its_me <- function(name){
 its_me("Ramon")
 
 
-# EXERCICES 1 -------------------------------------------------------------
+# EXERCISES 1 -------------------------------------------------------------
 
 # 2. Create a function that, given a 2-element vector, returns 1 character with the name and surname
 #    concatenated with a blank space in between (example: Given c("Didac", "Fortuny") returns "Didac Fortuny")
