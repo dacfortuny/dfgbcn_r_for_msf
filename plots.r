@@ -1,6 +1,6 @@
 # R for MSF: 5. Plots
 
-install.packages("ggplot2")
+# install.packages("ggplot2")
 library(ggplot2)
 
 
@@ -29,6 +29,38 @@ ggplot(mtcars, aes(x=mpg)) +
 # check color palette: http://sape.inf.usi.ch/quick-reference/ggplot2/colour
 ggplot(mtcars, aes(x=mpg)) +
   geom_histogram(binwidth=5, color="darkturquoise", fill="cadetblue4") +
+  ggtitle("Distribution of mpg") +
+  ylab("frequency") +
+  xlab("mile per Galon")
+
+# compare distributions #1
+ggplot(mtcars, aes(x=mpg)) +
+  geom_histogram(binwidth=5, aes(fill=as.character(cyl))) +
+  ggtitle("Distribution of mpg") +
+  ylab("frequency") +
+  xlab("mile per Galon")
+
+# compare distributions #2
+ggplot(mtcars, aes(x=mpg, fill=as.character(cyl))) +
+  geom_histogram(binwidth=5, position=position_dodge()) +
+  ggtitle("Distribution of mpg") +
+  ylab("frequency") +
+  xlab("mile per Galon")
+
+# compare distributions #3
+ggplot(mtcars, aes(x=mpg, fill=as.character(cyl))) + 
+  geom_histogram(binwidth=5, alpha=0.5, aes(y=..density..), position='identity') +
+  ggtitle("Distribution of mpg") +
+  ylab("frequency") +
+  xlab("mile per Galon")
+
+# compare distributions #4
+x <- table(round(mtcars$mpg/5)*5, mtcars$cyl)
+df_mtcars <- data.frame(mpg = rep(rownames(x), length(unique(mtcars$cyl))),
+                        cyl = rep(unique(mtcars$cyl), each=nrow(x)),
+                        value = unlist(sapply(1:3, function(i) {list(as.numeric(x[, i]))})))
+ggplot(df_mtcars, aes(x=mpg, y=value, fill=as.character(cyl))) + 
+  geom_bar(position=position_dodge(), stat="identity") +
   ggtitle("Distribution of mpg") +
   ylab("frequency") +
   xlab("mile per Galon")
