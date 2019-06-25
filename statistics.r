@@ -7,42 +7,54 @@ sample(x)
 
 
 # Sampling distributions --------------------------------------------------
-# Normal distribution
-x <- rnorm(100)
-hist(x)
-hist(x, freq = FALSE)
-lines(density(x), col="red", lwd=4)
-
-
 # Uniform distribution
-x <- runif(100)
+x <- runif(100)  # overwriting the element x
 hist(x)
 x <- runif(10000)
 hist(x)
+
+# Normal distribution
+x <- rnorm(100)
+hist(x)
+hist(x, freq = FALSE)  # change y axis to density instead of frequency
+lines(density(x), col="red", lwd=4)
+
 
 # Binomial distribution: discrete probability distribution of the number of successes 
 # in a sequence of n independent experiments, each asking a yes–no question, and each 
 # with its own boolean-valued outcome.
 # In R we can toss a fair coin 10 times, by
-rbinom(10, 1, 0.5)
+rbinom(n=10, size=1, prob=0.5)
 rbinom(10, 1, 0.5)
 
 # and a biased coin (succes probability=0.8) 5 times by
 rbinom(5, 1, 0.8)
 
+# This experiment follows a Bernoulli distribution since there are only 2 options available: heads or tails
+rbern  # try autocomplete
+# look for bernoulli
+install.packages("purr")
+"purr" %in% rownames(available.packages())
 
-# Read data ---------------------------------------------------------------
+###############
+## Go to ppt ##
+###############
+
+# Descriptive statistics: categorical data --------------------------------------------------
+# Read data
 library(readxl)
 pss_data <- read_excel("data/PSS-Sample DataSet no password.xlsx")
 View(pss_data)
 
-
-# Descriptive statistics: categorical data --------------------------------------------------
+# Statistics
 freq_table <- table(pss_data$Unit_of_the_hospital)
 
+unique(pss_data$Unit_of_the_hospital)[which.max(tabulate(as.factor(pss_data$Unit_of_the_hospital)))]
+
 getmode <- function(x) {
-  uniq_x <- unique(x)
-  uniq_x[which.max(tabulate(match(x, uniq_x)))]
+  unique(x)[which.max(tabulate(as.factor(x)))]
+  # uniq_x <- unique(x)
+  # uniq_x[which.max(tabulate(match(x, uniq_x)))]
 }
 getmode(pss_data$Unit_of_the_hospital)
 
@@ -50,9 +62,14 @@ prop.table(freq_table)
 
 
 freq_table <- table(pss_data$Please_write_down_t_the_survey_minutes)
-barplot(freq_table)
 freq_table
+barplot(freq_table)  # weird order in x axis
+
+names(freq_table)
+as.integer(names(freq_table))
+order(as.integer(names(freq_table)))
 freq_table <- freq_table[order(as.integer(names(freq_table)))]
+freq_table
 barplot(freq_table)
 cumsum(freq_table)
 barplot(cumsum(freq_table))
@@ -67,10 +84,14 @@ mean(age)
 quantile(age)
 IQR(age)
 ?quantile
-quantile(age, probs = seq(0, 1, 0.1))
+quantile(age, probs = seq(from=0, to=1, by=0.1))
 
 # Standard deviation
 sd(age)
+
+###############
+## Go to ppt ##
+###############
 
 # Statistical tests: checking normality --------------------------------------------------
 hist(age)
@@ -89,9 +110,29 @@ qqplot(minutes, rnorm(n=length(minutes), mean=mean(minutes), sd=sd(minutes)))
 hist(minutes)
 
 # Statistical tests: Mann-Whitney U test --------------------------------------------------
-# H0: Samples don’t differ greatly.
-# Ha: Sample differ greatly.
+# H0: Samples don't differ greatly.
+# Ha: Samples differ greatly.
 table(pss_data$did_something_get_stolen)
+?wilcox.test
 wilcox.test(age ~ pss_data$did_something_get_stolen) 
-# p-value: 0.5278 -> samples don't differ greatly
+# p-value: 0.5278 > 0.05 => samples don't differ greatly
+
+# EXERCISES ---------------------------------------------------------------
+
+# 1. Do these populations differ significantly in age: people in maternity_gynecology_ward and nicu_neonatology?
+# Tip: exploratory analysis - Kolmogorov-Smirnov (ks.test)
+table(pss_data$Unit_of_the_hospital, pss_data$age_years)
+table(pss_data$Unit_of_the_hospital, round(pss_data$age_years, -1))
+?ks.test
+x <- subset(pss_data, Unit_of_the_hospital == "maternity_gynecology_ward", select=age_years)
+y <- subset(pss_data, Unit_of_the_hospital == "nicu_neonatology", select=age_years)
+ks.test(x, y)
+class(x)
+mode(x)
+unlist(x)
+as.numeric(unlist(x))
+x <- as.numeric(unlist(x))
+y <- as.numeric(unlist(y))
+ks.test(x, y)
+# p-value: 0.06289 > 0.05 => not reject => x and y are drawn from the same distribution
 
