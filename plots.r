@@ -7,6 +7,7 @@ library(ggplot2)
 # Histogram -----------------------------------------------------------------
 mtcars <- mtcars
 # ggplot(), the structure of a plot
+# aes(), set aesthetics
 ggplot(mtcars, aes(x=mpg))
 
 # histogram
@@ -15,7 +16,7 @@ ggplot(mtcars, aes(x=mpg)) +
 
 # change the width of the bins
 ggplot(mtcars, aes(x=mpg)) +
-  geom_histogram(binwidth=5)
+  geom_histogram(binwidth=3)
 
 # add titles
 ggplot(mtcars, aes(x=mpg)) +
@@ -25,8 +26,9 @@ ggplot(mtcars, aes(x=mpg)) +
   xlab("mile per Galon")
 
 # customize colors
+# check color palette: http://sape.inf.usi.ch/quick-reference/ggplot2/colour
 ggplot(mtcars, aes(x=mpg)) +
-  geom_histogram(binwidth=5, color="blue", fill="yellow") +
+  geom_histogram(binwidth=5, color="darkturquoise", fill="cadetblue4") +
   ggtitle("Distribution of mpg") +
   ylab("frequency") +
   xlab("mile per Galon")
@@ -102,13 +104,22 @@ ggplot(mtcars, aes(x=as.character(cyl), y=mpg, fill=as.character(cyl))) +
   xlab("number of cylinders") +
   ggtitle("boxplots for mpg")
 
+# and change legend title
+ggplot(mtcars, aes(x=as.character(cyl), y=mpg, fill=as.character(cyl))) +
+  geom_boxplot() +
+  xlab("number of cylinders") +
+  ggtitle("boxplots for mpg") +
+  labs(fill="Cylinders") +
+  theme(legend.position="top")
 
 
 # Violin ------------------------------------------------------------------
 ggplot(mtcars, aes(x=as.character(cyl), y=mpg, fill=as.character(cyl))) +
   geom_violin() +
   xlab("number of cylinders") +
-  ggtitle("violin for mpg")
+  ggtitle("violin for mpg") +
+  labs(fill="Cylinders") +
+  theme(legend.position="top")
 
 
 # Compare distributions ---------------------------------------------------
