@@ -1,0 +1,104 @@
+---
+title: "R for MSF rest report"
+author: "Didac Fortuny"
+date: "22/6/2019"
+output: pdf_document
+---
+
+```{r LIBRARIES, include=FALSE}
+library(dplyr)
+library(knitr)
+library(readxl)
+```
+
+```{r READ DATA, include=FALSE}
+pss_data <- read_excel("data/PSS-Sample DataSet no password.xlsx")
+```
+
+```{r SEPARATE DATA BY ROUND, include=FALSE}
+pss_data_round_1 <- pss_data %>% filter(Round == 1)
+pss_data_round_2 <- pss_data %>% filter(Round == 2)
+```
+
+# How happy are you with the staff (nurses and doctors) working in the facility?
+
+## Round 1
+
+```{r How happy are you with the staff (nurses and doctors) working in the facility?, echo=FALSE, results="asis"}
+data <- pss_data_round_1
+
+data$level_of_satisfaction <- NA
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_unhappy"] <- 0
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "unhappy"] <- 1
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "neutral"] <- 2
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "happy"] <- 3
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_happy"] <- 4
+
+summary_table <- data %>% group_by(level_of_satisfaction) %>% summarise(N = n())
+summary_table <- summary_table %>% arrange(desc(level_of_satisfaction))
+summary_table <- summary_table %>% mutate(Percentage = 100 * N / sum(N))
+summary_table$Cumulative_percentage <- cumsum(summary_table$Percentage)
+
+kable(summary_table, caption = "How happy are you with the staff (nurses and doctors) working in the facility?")
+```
+
+```{r Number of happy or very happy, echo=FALSE}
+happy <- data %>% filter(level_of_satisfaction >= 3)
+happy <- nrow(happy)
+```
+
+The number of patients who were Very happy or Happy with the staff was `r happy`.
+
+
+## Round 2
+
+(Remember to change the name of the chunks when copying parts of code!)
+
+```{r How happy are you with the staff (nurses and doctors) working in the facility? ROUND 2, echo=FALSE, results="asis"}
+data <- pss_data_round_2
+
+data$level_of_satisfaction <- NA
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_unhappy"] <- 0
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "unhappy"] <- 1
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "neutral"] <- 2
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "happy"] <- 3
+data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_happy"] <- 4
+
+summary_table <- data %>% group_by(level_of_satisfaction) %>% summarise(N = n())
+summary_table <- summary_table %>% arrange(desc(level_of_satisfaction))
+summary_table <- summary_table %>% mutate(Percentage = 100 * N / sum(N))
+summary_table$Cumulative_percentage <- cumsum(summary_table$Percentage)
+
+kable(summary_table, caption = "How happy are you with the staff (nurses and doctors) working in the facility?")
+```
+
+```{r Number of happy or very happy ROUND 2, echo=FALSE}
+happy <- data %>% filter(level_of_satisfaction >= 3)
+happy <- nrow(happy)
+```
+
+The number of patients who were Very happy or Happy with the staff was `r happy`.
+
+```{r DEMOGRAPHIC STATISTICS}
+data_demo <- pss_data %>% select(age_years, gender, language)
+data_demo$age_group <- NA
+data_demo$age_group[data_demo$age_years <= 15] <- "under 16"
+data_demo$age_group[data_demo$age_years > 50] <- "over 50"
+data_demo$age_group[(data_demo$age_years > 15) & (data_demo$age_years <= 50)] <- "in the middle"
+data_demo
+
+gender_demo <- data_demo %>% group_by(gender) %>%
+    summarize(number_of_records = n()) %>%
+    mutate(Percentage = 100 * number_of_records / sum(number_of_records))
+
+age_demo <- data_demo %>% group_by(age_group) %>%
+    summarize(number_of_records = n()) %>%
+    mutate(Percentage = 100 * number_of_records / sum(number_of_records))
+
+language_demo <- data_demo %>% group_by(language) %>%
+    summarize(number_of_records = n()) %>%
+    mutate(Percentage = 100 * number_of_records / sum(number_of_records))
+
+language_demo
+```
+
