@@ -13,14 +13,14 @@ ui <- fluidPage(
       helpText("Analyse the results from
                the executed survey."),
       
-      radioButtons("data", 
+      radioButtons("round", 
                    label = "Choose the data to display",
                    choices = list("Round 1" = 1,
                                   "Round 2" = 2,
                                   "Compare" = -1),
                    selected = c(1)),
       
-      selectInput("var", 
+      selectInput("variable", 
                   label = "Choose a variable to display",
                   choices = vars_list,
                   selected = vars_list[1])
@@ -47,7 +47,7 @@ server <- function(input, output) {
   
 
   output$selected_var <- renderPlot({
-    data_selected <- input$data
+    round_selected <- input$round
     labels <- list(ylab("Frequency"),
                    xlab(input$var),
                    ggtitle(paste("Distribution of", input$var)),
@@ -57,28 +57,28 @@ server <- function(input, output) {
                    axis.title.x = element_text(size = 15),
                    axis.title.y = element_text(size = 15),
                    axis.text = element_text(size = 12))
-      
-    if (data_selected != -1) {
-      data <- subset(pss_data, Round == data_selected)
-      var_data <- data[, input$var]
-      if (class(var_data) == "numeric" & mode(var_data) == "numeric") {
-        ggplot(data, aes(data[, input$var])) +
+    
+    if (round_selected != -1) {
+      data <- pss_data %>% filter(Round == round_selected)
+      variable_data <- data[, input$variable]
+      if (class(variable_data) == "numeric") {
+        ggplot(data, aes(variable_data)) +
           stat_count(fill="#00bfc4") +
           labels + theme
       } else {
-        ggplot(data, aes(data[, input$var])) +
+        ggplot(data, aes(variable_data)) +
           geom_bar(fill="#00bfc4") +
           labels + theme
       }
     } else {
       data <- pss_data
-      var_data <- data[, input$var]
-      if (mode(var_data) == "numeric") {
-        ggplot(data, aes(data[, input$var], fill=as.character(Round))) +
+      variable_data <- pss_data[, input$variable]
+      if (class(variable_data) == "numeric") {
+        ggplot(data, aes(variable_data, fill=as.character(Round))) +
           stat_count(position=position_dodge()) +
           labels + theme
       } else {
-        ggplot(data, aes(data[, input$var], fill=as.character(Round))) +
+        ggplot(data, aes(variable_data, fill=as.character(Round))) +
           geom_bar(position=position_dodge()) +
           labels + theme
       }
