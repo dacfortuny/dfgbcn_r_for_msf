@@ -64,12 +64,14 @@ data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_
 data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "happy"] <- 3
 data$level_of_satisfaction[data$How_happy_are_you_with_the_staff_working_in_the_facility == "very_happy"] <- 4
 
-summary_table <- data %>% group_by(level_of_satisfaction) %>% summarise(N = n())
+summary_table <- data %>% group_by(How_happy_are_you_with_the_staff_working_in_the_facility, level_of_satisfaction) %>% summarise(N = n())
 summary_table <- summary_table %>% arrange(desc(level_of_satisfaction))
 summary_table <- summary_table %>% mutate(Percentage = 100 * N / sum(N))
 summary_table$Cumulative_percentage <- cumsum(summary_table$Percentage)
 
-kable(summary_table, caption = "How happy are you with the staff (nurses and doctors) working in the facility?")
+summary_table_clean <- summary_table %>% select(happiness =How_happy_are_you_with_the_staff_working_in_the_facility, N, Percentage, Cumulative_percentage)
+
+kable(summary_table_clean, caption = "How happy are you with the staff (nurses and doctors) working in the facility?")
 ```
 
 ```{r Number of happy or very happy ROUND 2, echo=FALSE}
